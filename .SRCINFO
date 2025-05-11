@@ -1,27 +1,27 @@
-pkgbase = nvidia-vgpu-18-kmod
+pkgbase = nvidia-vgpu-18-kmod-hardened
 	pkgver = 570.133.10
 	pkgrel = 1
 	url = https://www.nvidia.com/
 	arch = x86_64
 	license = custom:proprietary
-	makedepends = linux-headers
+	makedepends = linux-hardened-headers
 	source = NVIDIA-Linux-x86_64-570.133.10-vgpu-kvm.run
 	source = 0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch
 	sha256sums = 1440818428817c9ea0dab98d92e3238a137cadc58956a62e5877ab6a735b9a85
 	sha256sums = 8e746dc88b43e3e28787371cfb7bc5b3ed58ed27b71d29a191bb16a2f7ad0044
 
-pkgname = nvidia-vgpu-18-kmod
-	pkgdesc = NVIDIA vGPU kernel modules v18
-	depends = linux
+pkgname = nvidia-vgpu-18-kmod-hardened
+	pkgdesc = NVIDIA vGPU kernel modules v18 for linux-hardened
+	depends = linux-hardened
 	depends = nvidia-vgpu-18-utils=570.133.10
 	provides = NVIDIA-MODULE
 	provides = nvidia
 	conflicts = NVIDIA-MODULE
 	conflicts = nvidia
 
-pkgname = nvidia-vgpu-18-kmod-open
-	pkgdesc = NVIDIA vGPU kernel modules v18, open source
-	depends = linux
+pkgname = nvidia-vgpu-18-kmod-hardened-open
+	pkgdesc = NVIDIA vGPU kernel modules v18 for linux-hardened, open source
+	depends = linux-hardened
 	depends = nvidia-vgpu-18-utils=570.133.10
 	provides = NVIDIA-MODULE
 	provides = nvidia-open
