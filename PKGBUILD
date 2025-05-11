@@ -1,12 +1,12 @@
 # Maintainer: Leo <i@hardrain980.com>
-pkgname=('nvidia-vgpu-17-kmod' 'nvidia-vgpu-17-kmod-open' 'nvidia-vgpu-17-kmod-unlock')
-pkgbase=nvidia-vgpu-17-kmod
+pkgname=('nvidia-vgpu-17-kmod-hardened' 'nvidia-vgpu-17-kmod-hardened-open' 'nvidia-vgpu-17-kmod-hardened-unlock')
+pkgbase=nvidia-vgpu-17-kmod-hardened
 pkgver=550.163.02
 pkgrel=1
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
-makedepends=('linux-headers')
+makedepends=('linux-hardened-headers')
 source=("$pkgbase-$pkgver.tar.gz"
         "$pkgname-$pkgver.patch")
 _pkg="NVIDIA-Linux-x86_64-${pkgver}-vgpu-kvm"
@@ -33,42 +33,42 @@ prepare() {
 
 build() {
 	cd "${srcdir}/${_pkg}/kernel"
-	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux"
+	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux-hardened"
 	cd "${srcdir}/${_pkg}/kernel-open"
-	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux"
+	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux-hardened"
 	cd "${srcdir}/${_pkg_unlock}/kernel"
-	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux"
+	CFLAGS= CXXFLAGS= LDFLAGS= make SYSSRC="/usr/src/linux-hardened"
 }
 
-package_nvidia-vgpu-17-kmod() {
-	pkgdesc="NVIDIA vGPU kernel modules v17"
-	depends=('linux' "nvidia-vgpu-17-utils=${pkgver}")
+package_nvidia-vgpu-17-kmod-hardened() {
+	pkgdesc="NVIDIA vGPU kernel modules v17 for linux-hardened"
+	depends=('linux-hardened' "nvidia-vgpu-17-utils=${pkgver}")
 	provides=('NVIDIA-MODULE' 'nvidia')
 	conflicts=('NVIDIA-MODULE' 'nvidia')
 
-	install -Dm0644 "${srcdir}/${_pkg}/kernel"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux/version)/extramodules"
+	install -Dm0644 "${srcdir}/${_pkg}/kernel"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux-hardened/version)/extramodules"
 	find "${pkgdir}" -name '*.ko' -exec strip --strip-debug {} +
 	find "${pkgdir}" -name '*.ko' -exec zstd --rm -19 {} +
 }
 
-package_nvidia-vgpu-17-kmod-open() {
-	pkgdesc="NVIDIA vGPU kernel modules v17, open source"
-	depends=('linux' "nvidia-vgpu-17-utils=${pkgver}")
+package_nvidia-vgpu-17-kmod-hardened-open() {
+	pkgdesc="NVIDIA vGPU kernel modules v17 for linux-hardened, open source"
+	depends=('linux-hardened' "nvidia-vgpu-17-utils=${pkgver}")
 	provides=('NVIDIA-MODULE' 'nvidia-open')
 	conflicts=('NVIDIA-MODULE' 'nvidia-open')
 
-	install -Dm0644 "${srcdir}/${_pkg}/kernel-open"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux/version)/extramodules"
+	install -Dm0644 "${srcdir}/${_pkg}/kernel-open"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux-hardened/version)/extramodules"
 	find "${pkgdir}" -name '*.ko' -exec strip --strip-debug {} +
 	find "${pkgdir}" -name '*.ko' -exec zstd --rm -19 {} +
 }
 
-package_nvidia-vgpu-17-kmod-unlock() {
-	pkgdesc="NVIDIA vGPU kernel modules v17, with vGPU unlock patch"
-	depends=('linux' "nvidia-vgpu-17-utils-unlock=${pkgver}")
+package_nvidia-vgpu-17-kmod-hardened-unlock() {
+	pkgdesc="NVIDIA vGPU kernel modules v17 for linux-hardened, with vGPU unlock patch"
+	depends=('linux-hardened' "nvidia-vgpu-17-utils-unlock=${pkgver}")
 	provides=('NVIDIA-MODULE' 'nvidia')
 	conflicts=('NVIDIA-MODULE' 'nvidia')
 
-	install -Dm0644 "${srcdir}/${_pkg_unlock}/kernel"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux/version)/extramodules"
+	install -Dm0644 "${srcdir}/${_pkg_unlock}/kernel"/*.ko -t "${pkgdir}/usr/lib/modules/$(</usr/src/linux-hardened/version)/extramodules"
 	find "${pkgdir}" -name '*.ko' -exec strip --strip-debug {} +
 	find "${pkgdir}" -name '*.ko' -exec zstd --rm -19 {} +
 }
