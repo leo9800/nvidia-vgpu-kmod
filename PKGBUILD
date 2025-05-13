@@ -2,7 +2,7 @@
 pkgname=('nvidia-vgpu-16-kmod-hardened' 'nvidia-vgpu-16-kmod-hardened-unlock')
 pkgbase=nvidia-vgpu-16-kmod-hardened
 pkgver=535.247.02
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
