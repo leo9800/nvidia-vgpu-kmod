@@ -2,7 +2,7 @@
 pkgname=('nvidia-vgpu-18-kmod' 'nvidia-vgpu-18-kmod-open')
 pkgbase=nvidia-vgpu-18-kmod
 pkgver=570.133.10
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
