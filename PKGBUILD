@@ -1,8 +1,8 @@
 # Maintainer: Leo <i@hardrain980.com>
 pkgname=('nvidia-vgpu-18-kmod-hardened' 'nvidia-vgpu-18-kmod-hardened-open')
 pkgbase=nvidia-vgpu-18-kmod-hardened
-pkgver=570.133.10
-pkgrel=4
+pkgver=570.148.06
+pkgrel=1
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
@@ -16,7 +16,7 @@ source=(
 	'0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch'
 )
 sha256sums=(
-	'1440818428817c9ea0dab98d92e3238a137cadc58956a62e5877ab6a735b9a85'
+	'fedcb2fca8bdb80ade416d113c0b31a8fbc33ebf4c8cfb1fcc5325023db0fd45'
 	'8e746dc88b43e3e28787371cfb7bc5b3ed58ed27b71d29a191bb16a2f7ad0044'
 )
 
