@@ -2,7 +2,7 @@
 pkgname=('nvidia-vgpu-18-kmod' 'nvidia-vgpu-18-kmod-open')
 pkgbase=nvidia-vgpu-18-kmod
 pkgver=570.148.06
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
@@ -14,16 +14,22 @@ _pkg_unlock="NVIDIA-Linux-x86_64-${pkgver}-vgpu-kvm-unlock"
 source=(
 	"${_pkg}.run"
 	'0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch'
+	'0002-vGPU-18-Linux-6.15-compat.patch'
+	'0002-vGPU-18-open-Linux-6.15-compat.patch'
 )
 sha256sums=(
 	'fedcb2fca8bdb80ade416d113c0b31a8fbc33ebf4c8cfb1fcc5325023db0fd45'
 	'8e746dc88b43e3e28787371cfb7bc5b3ed58ed27b71d29a191bb16a2f7ad0044'
+	'7b3bc13e5d7eaf2f9b6fbfbd5c30d07c38023fdf615ed9bf173e09bf1366db55'
+	'896a6e1be99783392e1da2d913c443bdde98d68e36f31aac237edabbde65c614'
 )
 
 prepare() {
 	sh "${_pkg}.run" -x
 	patch -Np1 -d "${srcdir}/${_pkg}/kernel" < "${srcdir}/0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch"
 	patch -Np1 -d "${srcdir}/${_pkg}/kernel-open" < "${srcdir}/0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch"
+	patch -Np1 -d "${srcdir}/${_pkg}/kernel" < "${srcdir}/0002-vGPU-18-Linux-6.15-compat.patch"
+	patch -Np1 -d "${srcdir}/${_pkg}/kernel-open" < "${srcdir}/0002-vGPU-18-open-Linux-6.15-compat.patch"
 }
 
 build() {
