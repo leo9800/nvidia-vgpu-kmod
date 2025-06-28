@@ -2,7 +2,7 @@
 pkgname=('nvidia-vgpu-16-kmod' 'nvidia-vgpu-16-kmod-unlock')
 pkgbase=nvidia-vgpu-16-kmod
 pkgver=535.247.02
-pkgrel=6
+pkgrel=7
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
