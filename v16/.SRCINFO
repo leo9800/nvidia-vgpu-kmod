@@ -1,0 +1,33 @@
+pkgbase = nvidia-vgpu-16-kmod
+	pkgver = 535.247.02
+	pkgrel = 8
+	url = https://www.nvidia.com/
+	arch = x86_64
+	license = custom:proprietary
+	makedepends = linux-headers
+	source = NVIDIA-Linux-x86_64-535.247.02-vgpu-kvm.run
+	source = 0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch
+	source = 0002-vGPU-16-Linux-6.15-compat.patch
+	source = vgpu_unlock_535.247.02.patch
+	sha256sums = d6bffcc1c2bfc0613981541df573ef87fd49ed2cb1df99d66e7f0f65f051c994
+	sha256sums = 8e746dc88b43e3e28787371cfb7bc5b3ed58ed27b71d29a191bb16a2f7ad0044
+	sha256sums = 031a27f3223fc0c2106c95a88095eb17ac5d0d6c330821fa33e206d59536ccbe
+	sha256sums = 24c519d71d8c53cc1198dbebdc1e58470c7cdd1472f4d07342029e6600298907
+
+pkgname = nvidia-vgpu-16-kmod
+	pkgdesc = NVIDIA vGPU kernel modules v16
+	depends = linux
+	depends = nvidia-vgpu-16-utils=535.247.02
+	provides = NVIDIA-MODULE
+	provides = nvidia
+	conflicts = NVIDIA-MODULE
+	conflicts = nvidia
+
+pkgname = nvidia-vgpu-16-kmod-unlock
+	pkgdesc = NVIDIA vGPU kernel modules v16, with vGPU unlock patch
+	depends = linux
+	depends = nvidia-vgpu-16-utils-unlock=535.247.02
+	provides = NVIDIA-MODULE
+	provides = nvidia
+	conflicts = NVIDIA-MODULE
+	conflicts = nvidia
