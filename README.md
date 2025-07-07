@@ -13,8 +13,6 @@
 - [`linux`](https://archlinux.org/packages/core/x86_64/linux/)
 - [`linux-hardened`](https://archlinux.org/packages/extra/x86_64/linux-hardened/)
 
-**Check branches for Arch Linux source packages** (i.e. `PKGBUILD` files)
-
 ### Acknowledement
 
 - https://gitlab.com/polloloco/vgpu-proxmox: vGPU unlock patches, NVIDIA vGPU driver downloading tutorial
