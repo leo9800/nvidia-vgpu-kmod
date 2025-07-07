@@ -1,0 +1,149 @@
+From 638a0600871fe9efc7a834fe97495d255bc6d3cb Mon Sep 17 00:00:00 2001
+From: Leo <i@hardrain980.com>
+Date: Tue, 10 Jun 2025 23:45:40 +0800
+Subject: [PATCH] vGPU-17: Linux 6.15 compat:
+
+addresses multiple issues that prevent nvidia kernel module from
+building against linux kernel >= 6.15.0
+
+        - deprecation of EXTRA_*FLAGS in Kbuild, ccflags-y is now mandatory.
+        - del_timer_sync() renamed to timer_delete_sync()
+        - GPL symbols used with non-GPL-compliance module: vm_flags_set() and vm_flags_clear()
+---
+ Kbuild                 |  6 ++++++
+ common/inc/nv-mm.h     | 15 +++++++++++++++
+ nvidia/nv-nano-timer.c |  7 +++++++
+ nvidia/nv.c            | 14 ++++++++++++++
+ 4 files changed, 42 insertions(+)
+
+diff --git a/Kbuild b/Kbuild
+index 8d1f3d9..3983a92 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -153,6 +153,12 @@ ifdef VGX_FORCE_VFIO_PCI_CORE
+  EXTRA_CFLAGS += -DNV_VGPU_FORCE_VFIO_PCI_CORE
+ endif
+ 
++# EXTRA_*FLAGS is deprecated as of linux 6.15.0
++# EXTRA_CFLGAS must be appended to ccflags-y or 
++# compiler could not find header files live in 
++# `common/inc` and fails building.
++ccflags-y += $(EXTRA_CFLAGS)
++
+ WARNINGS_AS_ERRORS ?=
+ ifeq ($(WARNINGS_AS_ERRORS),1)
+  ccflags-y += -Werror
+diff --git a/common/inc/nv-mm.h b/common/inc/nv-mm.h
+index 83363fa..9b3d0ce 100644
+--- a/common/inc/nv-mm.h
++++ b/common/inc/nv-mm.h
+@@ -44,6 +44,7 @@ typedef int vm_fault_t;
+ 
+ #include <linux/mm.h>
+ #include <linux/sched.h>
++#include <linux/version.h>
+ 
+ /*
+  * FreeBSD's pin_user_pages's conftest breaks since pin_user_pages is an inline
+@@ -298,7 +299,14 @@ static inline struct rw_semaphore *nv_mmap_get_lock(struct mm_struct *mm)
+ static inline void nv_vm_flags_set(struct vm_area_struct *vma, vm_flags_t flags)
+ {
+ #if defined(NV_VM_AREA_STRUCT_HAS_CONST_VM_FLAGS)
++// vm_flags_set() is not allowed to be invoked by a 
++// non-GPL compatible module as of linux >= 6.15
++// vm_flags_reset() is a mitigation to this issue.
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++    vm_flags_reset(vma, vma->vm_flags | flags);
++#else
+     vm_flags_set(vma, flags);
++#endif
+ #else
+     vma->vm_flags |= flags;
+ #endif
+@@ -307,7 +315,14 @@ static inline void nv_vm_flags_set(struct vm_area_struct *vma, vm_flags_t flags)
+ static inline void nv_vm_flags_clear(struct vm_area_struct *vma, vm_flags_t flags)
+ {
+ #if defined(NV_VM_AREA_STRUCT_HAS_CONST_VM_FLAGS)
++// vm_flags_clear() is neither allowed to be invoked by 
++// non-GPL compatible module as of linux >= 6.15
++// vm_flags_reset() is a mitigation to this issue.
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++    vm_flags_reset(vma, vma->vm_flags & ~flags);
++#else
+     vm_flags_clear(vma, flags);
++#endif
+ #else
+     vma->vm_flags &= ~flags;
+ #endif
+diff --git a/nvidia/nv-nano-timer.c b/nvidia/nv-nano-timer.c
+index f594931..864be16 100644
+--- a/nvidia/nv-nano-timer.c
++++ b/nvidia/nv-nano-timer.c
+@@ -27,6 +27,7 @@
+ #include <linux/hrtimer.h>
+ #include <linux/ktime.h>
+ #include <linux/timer.h>
++#include <linux/version.h>
+ #include "os-interface.h"
+ #include "nv-linux.h"
+ 
+@@ -208,9 +209,15 @@ void NV_API_CALL nv_cancel_nano_timer(
+ {
+ #if NV_NANO_TIMER_USE_HRTIMER
+     hrtimer_cancel(&nv_nstimer->hr_timer);
++#else
++// del_timer_sync() is renamed to timer_delete_sync() 
++// as of Linux 6.15
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++    timer_delete_sync(&nv_nstimer->jiffy_timer);
+ #else
+     del_timer_sync(&nv_nstimer->jiffy_timer);
+ #endif
++#endif
+ 
+ }
+ 
+diff --git a/nvidia/nv.c b/nvidia/nv.c
+index 21c31df..d530715 100644
+--- a/nvidia/nv.c
++++ b/nvidia/nv.c
+@@ -22,6 +22,7 @@
+  */
+ 
+ #include <linux/module.h>  // for MODULE_FIRMWARE
++#include <linux/version.h>
+ 
+ // must precede "nv.h" and "nv-firmware.h" includes
+ #define NV_FIRMWARE_PATH_FOR_FILENAME(filename)  "nvidia/" NV_VERSION_STRING "/" filename
+@@ -4101,7 +4102,13 @@ int NV_API_CALL nv_stop_rc_timer(
+ 
+     nv_printf(NV_DBG_INFO, "NVRM: stopping rc timer\n");
+     nv->rc_timer_enabled = 0;
++// del_timer_sync() is renamed to timer_delete_sync() 
++// as of Linux 6.15
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++    timer_delete_sync(&nvl->rc_timer.kernel_timer);
++#else
+     del_timer_sync(&nvl->rc_timer.kernel_timer);
++#endif
+     nv_printf(NV_DBG_INFO, "NVRM: rc timer stopped\n");
+ 
+     return 0;
+@@ -4145,7 +4152,14 @@ void NV_API_CALL nv_stop_snapshot_timer(void)
+     NV_SPIN_UNLOCK_IRQRESTORE(&nvl->snapshot_timer_lock, flags);
+ 
+     if (timer_active)
++// del_timer_sync() is renamed to timer_delete_sync() 
++// as of Linux 6.15
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++        timer_delete_sync(&nvl->snapshot_timer.kernel_timer);
++#else
+         del_timer_sync(&nvl->snapshot_timer.kernel_timer);
++#endif
++
+ }
+ 
+ void NV_API_CALL nv_flush_snapshot_timer(void)
+-- 
+2.49.0
+

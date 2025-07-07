@@ -1,0 +1,44 @@
+pkgbase = nvidia-vgpu-17-kmod-hardened
+	pkgver = 550.163.02
+	pkgrel = 6
+	url = https://www.nvidia.com/
+	arch = x86_64
+	license = custom:proprietary
+	makedepends = linux-hardened-headers
+	source = NVIDIA-Linux-x86_64-550.163.02-vgpu-kvm.run
+	source = 0001-CFLAGS-Set-std-gnu17-for-all-compilation-flags.patch
+	source = 0002-vGPU-17-Linux-6.15-compat.patch
+	source = 0002-vGPU-17-open-Linux-6.15-compat.patch
+	source = vgpu_unlock_550.163.02.patch
+	sha256sums = 61ffc6d64e2a8df85c98f62ed804963dd3890fa6053e43237e645ea63b9675dc
+	sha256sums = 8e746dc88b43e3e28787371cfb7bc5b3ed58ed27b71d29a191bb16a2f7ad0044
+	sha256sums = eb177d79b43c9b5139d1f2117f97497a61a8e84a42300e327b872a1ea3d7350e
+	sha256sums = 1a8499e6f091c9bd179905588d02304f77cdde1096a0f11518fe47c11bf54771
+	sha256sums = 5aa8132419221b824ca3853406249913cff2774ba218d48abbc2b7bdc76cc3ae
+
+pkgname = nvidia-vgpu-17-kmod-hardened
+	pkgdesc = NVIDIA vGPU kernel modules v17 for linux-hardened
+	depends = linux-hardened
+	depends = nvidia-vgpu-17-utils=550.163.02
+	provides = NVIDIA-MODULE
+	provides = nvidia
+	conflicts = NVIDIA-MODULE
+	conflicts = nvidia
+
+pkgname = nvidia-vgpu-17-kmod-hardened-open
+	pkgdesc = NVIDIA vGPU kernel modules v17 for linux-hardened, open source
+	depends = linux-hardened
+	depends = nvidia-vgpu-17-utils=550.163.02
+	provides = NVIDIA-MODULE
+	provides = nvidia-open
+	conflicts = NVIDIA-MODULE
+	conflicts = nvidia-open
+
+pkgname = nvidia-vgpu-17-kmod-hardened-unlock
+	pkgdesc = NVIDIA vGPU kernel modules v17 for linux-hardened, with vGPU unlock patch
+	depends = linux-hardened
+	depends = nvidia-vgpu-17-utils-unlock=550.163.02
+	provides = NVIDIA-MODULE
+	provides = nvidia
+	conflicts = NVIDIA-MODULE
+	conflicts = nvidia
