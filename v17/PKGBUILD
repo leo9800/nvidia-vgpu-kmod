@@ -2,7 +2,7 @@
 pkgname=('nvidia-vgpu-17-kmod' 'nvidia-vgpu-17-kmod-open' 'nvidia-vgpu-17-kmod-unlock')
 pkgbase=nvidia-vgpu-17-kmod
 pkgver=550.163.02
-pkgrel=8
+pkgrel=9
 arch=('x86_64')
 url="https://www.nvidia.com/"
 license=('custom:proprietary')
