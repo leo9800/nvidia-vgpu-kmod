@@ -1,6 +1,6 @@
 pkgbase = nvidia-vgpu-17-kmod-hardened
 	pkgver = 550.163.02
-	pkgrel = 8
+	pkgrel = 9
 	url = https://www.nvidia.com/
 	arch = x86_64
 	license = custom:proprietary
