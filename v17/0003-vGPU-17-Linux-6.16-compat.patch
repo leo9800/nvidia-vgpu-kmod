@@ -1,0 +1,59 @@
+From eceb37daae442dc7f0bdcb5b3a40e9468da2b006 Mon Sep 17 00:00:00 2001
+From: Leo <i@hardrain980.com>
+Date: Sat, 16 Aug 2025 01:16:27 +0800
+Subject: [PATCH] vGPU 17: Linux 6.16 compat
+
+as of linux 6.16, function dma_buf_attachment_is_dynamic() was made
+private and no longer defined in linux/dma-buf.h
+
+this patch would manually inline the content of the function mentioned
+above in case the kernel module is built against linux >= 6.16.0 to
+address this issue
+
+Signed-off-by: Leo <i@hardrain980.com>
+---
+ kernel-open/nvidia/nv-dmabuf.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/kernel-open/nvidia/nv-dmabuf.c b/kernel-open/nvidia/nv-dmabuf.c
+index f060839..ca69226 100644
+--- a/kernel-open/nvidia/nv-dmabuf.c
++++ b/kernel-open/nvidia/nv-dmabuf.c
+@@ -21,6 +21,7 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
+ #include <linux/dma-buf.h>
++#include <linux/version.h>
+ #include "nv-dmabuf.h"
+ 
+ #if defined(CONFIG_DMA_SHARED_BUFFER)
+@@ -783,6 +784,18 @@ nv_dma_buf_map(
+     // On non-coherent platforms, importers must be able to handle peer
+     // MMIO resources not backed by struct page.
+     //
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
++#if defined(NV_DMA_BUF_ATTACHMENT_HAS_PEER2PEER)
++    if (!priv->nv->coherent &&
++        !!attachment->importer_ops &&
++        !attachment->peer2peer)
++    {
++        nv_printf(NV_DBG_ERRORS,
++                  "NVRM: failed to map dynamic attachment with no P2P support\n");
++        return NULL;
++    }
++#endif
++#else
+ #if defined(NV_DMA_BUF_HAS_DYNAMIC_ATTACHMENT) && \
+     defined(NV_DMA_BUF_ATTACHMENT_HAS_PEER2PEER)
+     if (!priv->nv->coherent &&
+@@ -793,6 +806,7 @@ nv_dma_buf_map(
+                   "NVRM: failed to map dynamic attachment with no P2P support\n");
+         return NULL;
+     }
++#endif
+ #endif
+ 
+     mutex_lock(&priv->lock);
+-- 
+2.50.1
+
